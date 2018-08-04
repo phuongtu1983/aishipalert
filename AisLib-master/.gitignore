@@ -1,0 +1,12 @@
+bin/
+target
+.settings
+.project
+.classpath
+*.tokens
+ais-lib-communication/aisbus.xml
+*~
+.idea
+*.iml
+.DS_Store
+
