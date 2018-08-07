@@ -32,6 +32,8 @@ and open the template in the editor.
                         <%
                             }
                         %>
+                    </td>
+                    <td><input type="submit" name="configports" value="Ports"/></td>
                 </tr>
             </table>
             <input type="hidden" name="submited" value="1"/>
@@ -41,7 +43,7 @@ and open the template in the editor.
                 <td>
                     <span id="alertSpan">Alert type</span>
                     <button onclick="enableGetAISAjax()">Turn on map</button> 
-                    <button onclick="disableGetAISAjax()">Turn off map</button> 
+                    <button onclick="disableGetAISAjax()">Turn off map</button>                     
                     <div>AIS: <span id="aisSpan"></span></div>
                     <div>Alert: <span id="wirelessSpan"></span></div>
                 </td>

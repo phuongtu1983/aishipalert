@@ -25,6 +25,7 @@
                     String aisBaudrate = props.getProperty("ais_baudrate");
                     String wirelessPort = props.getProperty("wireless_port");
                     String wirelessBaudrate = props.getProperty("wireless_baudrate");
+                    String wirelessStatus = (String)request.getAttribute("wireless_status");
                 %>
                 <tr>
                     <td height='100' style='padding-right: 10px'>Cổng kết nối thiết bị AIS - Baudrate</td>
@@ -76,8 +77,19 @@
                 </tr>
                 <tr>
                     <td colspan="3">
-                        <input type="submit" value="Submit"/>
+                        <input type="submit" name="config" value="Submit"/>
+                        <input type="submit" name="tomainpage" value="Main Page"/>
                         <input type="hidden" name="save" value="1"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Connect status: <%=wirelessStatus%></td>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="submit" name="redalert" value="Test Red Alert"/>
+                        <input type="submit" name="yellowalert" value="Test Yellow Alert"/>
+                        <input type="submit" name="turnoffalert" value="Turn off Alert"/>
                     </td>
                 </tr>
             </table>

@@ -46,15 +46,19 @@ public class ControlServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
+            AISObjectList.setTestAlertType("");
+            String redirectPage = "mapservlet.do";
             String submited = request.getParameter("submited");
             if (submited != null && !submited.isEmpty()) {
                 if (request.getParameter("turnon") != null) {
                     PublicObjects.initObjects(this.getServletContext());
                 } else if (request.getParameter("turnoff") != null) {
                     PublicObjects.destroyObjects();
+                }else if (request.getParameter("configports") != null) {
+                    redirectPage = "comconfigalert.do";
                 }
             }
-            RequestDispatcher dispatcher = request.getRequestDispatcher("mapservlet.do");
+            RequestDispatcher dispatcher = request.getRequestDispatcher(redirectPage);
             dispatcher.forward(request, response);
         } catch (Exception ex) {
 

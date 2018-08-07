@@ -34,6 +34,10 @@ public class AlertTimerTask extends TimerTask {
         if (this.alertDataPort == null) {
             this.alertDataPort = initAlertPort();
         }
+        if (alertDataPort != null) {
+            ArduinoUtil util = new ArduinoUtil(alertDataPort);
+            util.turnAlert(AISBean.OFF_ALERT, 0);
+        }
     }
 
     public synchronized void schedule(long delay, long period) {
@@ -65,6 +69,14 @@ public class AlertTimerTask extends TimerTask {
                 return;
             }
         }
+
+        String testAlertType = AISObjectList.getTestAlertType();
+        if (!testAlertType.isEmpty()) {
+            ArduinoUtil util = new ArduinoUtil(alertDataPort);
+            util.turnAlert(testAlertType, 0);
+            return;
+        }
+
         if (secCount++ >= resetSecond) {
             closePort();
         }

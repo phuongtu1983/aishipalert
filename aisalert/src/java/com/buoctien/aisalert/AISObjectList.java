@@ -19,6 +19,7 @@ public class AISObjectList {
     private final static ArrayList aisList = new ArrayList();
     private static boolean aisOK = false;
     private static boolean wirelessOK = false;
+    private static String testAlertType = AISBean.OFF_ALERT;
 
     public static void addObject(AISBean bean) {
         AISBean obj = null;
@@ -68,7 +69,7 @@ public class AISObjectList {
     public static ArrayList getList() {
         return aisList;
     }
-    
+
     public static int getListSize() {
         return aisList.size();
     }
@@ -133,6 +134,14 @@ public class AISObjectList {
         if (wirelessOK != status) {
             wirelessOK = status;
         }
+    }
+
+    public static String getTestAlertType() {
+        return testAlertType;
+    }
+
+    public static void setTestAlertType(String testAlertType) {
+        AISObjectList.testAlertType = testAlertType;
     }
 
 }

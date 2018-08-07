@@ -5,6 +5,7 @@
  */
 package com.buoctien.aisalert;
 
+import com.buoctien.aisalert.bean.AISBean;
 import com.buoctien.aisalert.bean.StaticBean;
 import com.buoctien.aisalert.util.ConfigUtil;
 import com.buoctien.aisalert.util.SerialUtil;
@@ -53,16 +54,27 @@ public class COMConfigAlert extends HttpServlet {
             String fileName = this.getServletContext().getRealPath("/config.properties");
             String save = request.getParameter("save");
             if (save != null && !save.isEmpty()) {
-                try {
-                    Properties props = new Properties();
-                    props.setProperty("ais_port", request.getParameter("aisPort") == null ? "" : request.getParameter("aisPort"));
-                    props.setProperty("ais_baudrate", request.getParameter("aisBaudrate") == null ? "" : request.getParameter("aisBaudrate"));
-                    props.setProperty("wireless_port", request.getParameter("wirelessPort") == null ? "" : request.getParameter("wirelessPort"));
-                    props.setProperty("wireless_baudrate", request.getParameter("wirelessBaudrate") == null ? "" : request.getParameter("wirelessBaudrate"));
-                    ConfigUtil.saveConfig(fileName, props);
-                } catch (Exception ex) {
+                if (request.getParameter("config") != null) {
+                    try {
+                        Properties props = new Properties();
+                        props.setProperty("ais_port", request.getParameter("aisPort") == null ? "" : request.getParameter("aisPort"));
+                        props.setProperty("ais_baudrate", request.getParameter("aisBaudrate") == null ? "" : request.getParameter("aisBaudrate"));
+                        props.setProperty("wireless_port", request.getParameter("wirelessPort") == null ? "" : request.getParameter("wirelessPort"));
+                        props.setProperty("wireless_baudrate", request.getParameter("wirelessBaudrate") == null ? "" : request.getParameter("wirelessBaudrate"));
+                        ConfigUtil.saveConfig(fileName, props);
+                    } catch (Exception ex) {
+                    }
+                } else if (request.getParameter("redalert") != null) {
+                    AISObjectList.setTestAlertType(AISBean.RED_ALERT);
+                } else if (request.getParameter("yellowalert") != null) {
+                    AISObjectList.setTestAlertType(AISBean.YELLOW_ALERT);
+                } else if (request.getParameter("turnoffalert") != null) {
+                    AISObjectList.setTestAlertType(AISBean.OFF_ALERT);
+                } else if (request.getParameter("tomainpage") != null) {
+                    RequestDispatcher dispatcher = request.getRequestDispatcher("mainpage.do");
+                    dispatcher.forward(request, response);
+                    return;
                 }
-            } else {
 
             }
             Properties props = ConfigUtil.readConfig(fileName);
@@ -71,6 +83,7 @@ public class COMConfigAlert extends HttpServlet {
             ArrayList ports = SerialUtil.getSerialPorts();
             request.setAttribute(StaticBean.COM_PORTS, ports);
 
+            request.setAttribute("wireless_status", (AISObjectList.isWirelessOK() ? "Connected" : "Not Connected"));
             RequestDispatcher dispatcher = request.getRequestDispatcher("com_config.jsp");
             dispatcher.forward(request, response);
         } catch (Exception ex) {
