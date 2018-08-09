@@ -127,7 +127,7 @@ public class AISThread extends Thread {
                     } else {
                         AISObjectList.addObject(new AISBean(aisMessage.getUserId() + "", aisBean.getNavStatus(),
                                 aisBean.getPosition(), aisBean.getShipType(), AISBean.RED_ALERT, distance,
-                                new Date().getTime(), aisBean.getPosition().getLongitude() < StaticBean.MidPointLongtitude ? -1 : 1));
+                                aisBean.getPosition().getLongitude() < StaticBean.MidPointLongtitude ? -1 : 1));
                     }
                 } else {// khong nam trong khu vuc 200m
                     result = checkWithinArea(aisBean.getPosition(), StaticBean.RedRadius);
@@ -149,7 +149,7 @@ public class AISThread extends Thread {
                         } else {
                             AISObjectList.addObject(new AISBean(aisMessage.getUserId() + "", aisBean.getNavStatus(),
                                     aisBean.getPosition(), aisBean.getShipType(), AISBean.RED_ALERT, distance,
-                                    new Date().getTime(), aisBean.getPosition().getLongitude() < StaticBean.MidPointLongtitude ? -1 : 1));
+                                    aisBean.getPosition().getLongitude() < StaticBean.MidPointLongtitude ? -1 : 1));
                         }
                     } else {// khong nam trong khu vuc 300m
                         result = checkWithinArea500(aisBean.getPosition());
@@ -171,7 +171,7 @@ public class AISThread extends Thread {
                             } else {
                                 AISObjectList.addObject(new AISBean(aisMessage.getUserId() + "", aisBean.getNavStatus(),
                                         aisBean.getPosition(), aisBean.getShipType(), AISBean.YELLOW_ALERT, distance,
-                                        new Date().getTime(), aisBean.getPosition().getLongitude() < StaticBean.MidPointLongtitude ? -1 : 1));
+                                        aisBean.getPosition().getLongitude() < StaticBean.MidPointLongtitude ? -1 : 1));
                             }
                         } else { // nam ngoai khu vuc 500m
                             // nen nam trong khu vuc hien thi (500 - 1000)
@@ -188,7 +188,7 @@ public class AISThread extends Thread {
                             } else {
                                 AISObjectList.addObject(new AISBean(aisMessage.getUserId() + "", aisBean.getNavStatus(),
                                         aisBean.getPosition(), aisBean.getShipType(), AISBean.OFF_ALERT, distance,
-                                        new Date().getTime(), aisBean.getPosition().getLongitude() < StaticBean.MidPointLongtitude ? -1 : 1));
+                                        aisBean.getPosition().getLongitude() < StaticBean.MidPointLongtitude ? -1 : 1));
                             }
                         }
                     }

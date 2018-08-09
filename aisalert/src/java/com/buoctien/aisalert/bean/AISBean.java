@@ -6,6 +6,7 @@
 package com.buoctien.aisalert.bean;
 
 import dk.dma.enav.model.geometry.Position;
+import java.util.Date;
 
 /**
  *
@@ -66,7 +67,7 @@ public class AISBean {
         this.milisec = 0;
     }
 
-    public AISBean(String MMSI, int navStatus, Position position, int shipType, String alertArea, double distance, long milisec, int navigationImage) {
+    public AISBean(String MMSI, int navStatus, Position position, int shipType, String alertArea, double distance, int navigationImage) {
         this.MMSI = MMSI;
         this.name = "";
         this.navStatus = navStatus;
@@ -76,7 +77,7 @@ public class AISBean {
         this.navigationImage = navigationImage;
         this.alertArea = alertArea;
         this.distance = distance;
-        this.milisec = milisec;
+        this.milisec = new Date().getTime();
     }
 
     public int getNavStatus() {
