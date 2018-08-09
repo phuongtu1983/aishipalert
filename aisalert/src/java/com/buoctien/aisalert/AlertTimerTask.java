@@ -81,7 +81,7 @@ public class AlertTimerTask extends TimerTask {
             closePort();
         }
         AISObjectList.setWirelessOK(true);
-        if (AISObjectList.getListSize() == 0) {
+        if (!AISObjectList.isAnyShipDisplay()) {
             return;
         }
         AlertBean alert = AISObjectList.getAlert();

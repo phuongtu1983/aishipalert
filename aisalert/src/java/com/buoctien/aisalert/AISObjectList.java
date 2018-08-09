@@ -7,6 +7,7 @@ package com.buoctien.aisalert;
 
 import com.buoctien.aisalert.bean.AISBean;
 import com.buoctien.aisalert.bean.AlertBean;
+import com.buoctien.aisalert.bean.StaticBean;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -70,8 +71,15 @@ public class AISObjectList {
         return aisList;
     }
 
-    public static int getListSize() {
-        return aisList.size();
+    public static boolean isAnyShipDisplay() {
+        AISBean obj = null;
+        for (int i = 0; i < aisList.size(); i++) {
+            obj = (AISBean) aisList.get(i);
+            if (obj.getDistance() < StaticBean.DisplayRadius) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static AlertBean getAlert() {
