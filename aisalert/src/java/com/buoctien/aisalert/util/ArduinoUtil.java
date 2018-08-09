@@ -25,8 +25,9 @@ public class ArduinoUtil {
         if (serialPort == null) {
             return AISBean.OFF_ALERT;
         }
+        OutputStream outputStream = null;
         try {
-            OutputStream outputStream = serialPort.getOutputStream();
+            outputStream = serialPort.getOutputStream();
             if (alert.equals(AISBean.RED_ALERT)) {
                 switch (soundType) {
                     case 0:
@@ -58,8 +59,20 @@ public class ArduinoUtil {
                 outputStream.write(71);
                 return AISBean.OFF_ALERT;
             }
-            outputStream.close();
         } catch (Exception ex) {
+            System.out.println("turnAlert: " + ex);
+            if (this.serialPort != null) {
+                this.serialPort.close();
+                this.serialPort = null;
+            }
+        } finally {
+            try {
+                if (outputStream != null) {
+                    outputStream.close();
+                    outputStream = null;
+                }
+            } catch (Exception ex) {
+            }
         }
         return AISBean.OFF_ALERT;
     }
