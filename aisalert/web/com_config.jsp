@@ -28,7 +28,7 @@
                     String wirelessStatus = (String)request.getAttribute("wireless_status");
                 %>
                 <tr>
-                    <td height='100' style='padding-right: 10px'>Cổng kết nối thiết bị AIS - Baudrate</td>
+                    <td height='100' style='padding-right: 10px'>AIS (USB Serial Device) - Baudrate</td>
                     <td>
                         <select name="aisPort">
                             <%
@@ -52,7 +52,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td height='100' style='padding-right: 10px'>Cổng kết nối cảnh báo - Baudrate</td>
+                    <td height='100' style='padding-right: 10px'>Wireless (Profolic USB to Serial Comm Port)- Baudrate</td>
                     <td>
                         <select name="wirelessPort">
                             <%
@@ -83,7 +83,10 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>Connect status: <%=wirelessStatus%></td>
+                    <td>Wireless connect status: <%=wirelessStatus%></td>
+                    <td colspan="2">
+                        <input type="submit" name="testconnect" value="Test connect"/>
+                    </td>
                 </tr>
                 <tr>
                     <td>

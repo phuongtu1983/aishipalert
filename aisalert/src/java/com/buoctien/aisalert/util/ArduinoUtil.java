@@ -5,6 +5,7 @@
  */
 package com.buoctien.aisalert.util;
 
+import com.buoctien.aisalert.WirelessPortCloseEvent;
 import com.buoctien.aisalert.bean.AISBean;
 import gnu.io.SerialPort;
 import java.io.OutputStream;
@@ -16,9 +17,11 @@ import java.io.OutputStream;
 public class ArduinoUtil {
 
     private SerialPort serialPort = null;
+    private WirelessPortCloseEvent closedEvent;
 
-    public ArduinoUtil(SerialPort serialPort) {
+    public ArduinoUtil(SerialPort serialPort, WirelessPortCloseEvent closedEvent) {
         this.serialPort = serialPort;
+        this.closedEvent = closedEvent;
     }
 
     public String turnAlert(String alert, int soundType) {
@@ -61,10 +64,7 @@ public class ArduinoUtil {
             }
         } catch (Exception ex) {
             System.out.println("turnAlert: " + ex);
-            if (this.serialPort != null) {
-                this.serialPort.close();
-                this.serialPort = null;
-            }
+            closedEvent.terminatePort();
         } finally {
             try {
                 if (outputStream != null) {

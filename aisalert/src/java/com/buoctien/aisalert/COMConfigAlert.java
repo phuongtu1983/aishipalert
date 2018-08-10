@@ -74,6 +74,8 @@ public class COMConfigAlert extends HttpServlet {
                     RequestDispatcher dispatcher = request.getRequestDispatcher("mainpage.do");
                     dispatcher.forward(request, response);
                     return;
+                } else if (request.getParameter("testconnect") != null) {
+                    AISObjectList.setTestConnection(true);
                 }
 
             }

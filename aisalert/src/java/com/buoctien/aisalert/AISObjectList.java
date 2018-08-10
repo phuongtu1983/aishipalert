@@ -21,6 +21,7 @@ public class AISObjectList {
     private static boolean aisOK = false;
     private static boolean wirelessOK = false;
     private static String testAlertType = AISBean.OFF_ALERT;
+    private static boolean testConnection = false;
 
     public static void addObject(AISBean bean) {
         AISBean obj = null;
@@ -69,6 +70,13 @@ public class AISObjectList {
 
     public static ArrayList getList() {
         return aisList;
+    }
+
+    public static int getListSize() {
+        if (aisList != null) {
+            return aisList.size();
+        }
+        return 0;
     }
 
     public static boolean isAnyShipDisplay() {
@@ -150,6 +158,14 @@ public class AISObjectList {
 
     public static void setTestAlertType(String testAlertType) {
         AISObjectList.testAlertType = testAlertType;
+    }
+
+    public static boolean isTestConnection() {
+        return testConnection;
+    }
+
+    public static void setTestConnection(boolean testConnection) {
+        AISObjectList.testConnection = testConnection;
     }
 
 }

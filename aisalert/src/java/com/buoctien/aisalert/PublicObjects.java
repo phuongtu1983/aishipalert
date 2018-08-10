@@ -5,8 +5,6 @@
  */
 package com.buoctien.aisalert;
 
-import com.buoctien.aisalert.util.SerialUtil;
-import gnu.io.SerialPort;
 import javax.servlet.ServletContext;
 
 /**
@@ -15,28 +13,30 @@ import javax.servlet.ServletContext;
  */
 public class PublicObjects {
 
-    private static SerialPort aisDataPort = null;
-
+    private static AISPortWrapper aisPort = null;
     private static AISTimerTask aisTimer = null;
     private static AlertTimerTask alertTimer = null;
+    private static String configFileName;
 
     public static void initObjects(ServletContext context) {
         try {
-            String configFileName = context.getRealPath("/config.properties");
-            if (aisDataPort == null) {
-                aisDataPort = SerialUtil.initAlertPort(configFileName, "ais_port", "ais_baudrate");
-            }
-            String writtenFileName = context.getRealPath("/result.txt");
+            configFileName = context.getRealPath("/config.properties");
             if (aisTimer == null) {
                 new AISObjectList();
-                aisTimer = new AISTimerTask(aisDataPort, configFileName, writtenFileName);
+                if (aisPort == null) {
+                    aisPort = new AISPortWrapper();
+                }
+                if (aisPort.getAisDataPort() == null) {
+                    aisPort.initPort(configFileName);
+                }
+                aisTimer = new AISTimerTask(aisPort);
                 aisTimer.run();
                 aisTimer.schedule(0, 1000);
             }
             if (alertTimer == null) {
                 alertTimer = new AlertTimerTask(configFileName);
                 alertTimer.run();
-                alertTimer.schedule(0, 2000);
+                alertTimer.schedule(0, 1000);
             }
         } catch (Exception ex) {
         }
@@ -44,9 +44,9 @@ public class PublicObjects {
 
     public static void destroyObjects() {
         try {
-            if (aisDataPort != null) {
-                aisDataPort.close();
-                aisDataPort = null;
+            if (aisPort != null) {
+                aisPort.closePort();
+                aisPort = null;
             }
             if (aisTimer != null) {
                 aisTimer.cancel();
@@ -59,7 +59,7 @@ public class PublicObjects {
             AISObjectList.destroyObjects();
             System.out.println("On Load Servlet stopped");
         } catch (Exception ex) {
-
+            System.out.println("destroyObjects:" + ex);
         }
     }
 

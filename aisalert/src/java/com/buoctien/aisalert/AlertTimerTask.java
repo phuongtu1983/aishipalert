@@ -17,16 +17,16 @@ import java.util.TimerTask;
  *
  * @author DELL
  */
-public class AlertTimerTask extends TimerTask {
+public class AlertTimerTask extends TimerTask implements WirelessPortCloseEvent {
 
     private SerialPort alertDataPort = null;
     private final String configFileName;
     private boolean scheduled;
     private int secCount = 0;
     private final int resetSecond = 7200; // 2 tieng = 2 * 60 * 60
-    private final int changeToOff = 2; // 2 lan
+    private final int changeAlert = 60; // 2 lan
     private String alertType = AISBean.OFF_ALERT;
-    private int changeToOffCount = 0;
+    private int changeAlertCount = 0;
 
     public AlertTimerTask(String configFileName) {
         this.configFileName = configFileName;
@@ -34,10 +34,7 @@ public class AlertTimerTask extends TimerTask {
         if (this.alertDataPort == null) {
             this.alertDataPort = initAlertPort();
         }
-        if (alertDataPort != null) {
-            ArduinoUtil util = new ArduinoUtil(alertDataPort);
-            util.turnAlert(AISBean.OFF_ALERT, 0);
-        }
+        sendDataArduino(AISBean.OFF_ALERT, 0);
     }
 
     public synchronized void schedule(long delay, long period) {
@@ -50,8 +47,7 @@ public class AlertTimerTask extends TimerTask {
     @Override
     public boolean cancel() {
         if (alertDataPort != null) {
-            ArduinoUtil util = new ArduinoUtil(alertDataPort);
-            util.turnAlert(AISBean.OFF_ALERT, 0);
+            sendDataArduino(AISBean.OFF_ALERT, 0);
             closePort();
         }
         return super.cancel();
@@ -62,7 +58,7 @@ public class AlertTimerTask extends TimerTask {
         if (alertDataPort == null) {
             secCount = 0;
             alertType = AISBean.OFF_ALERT;
-            changeToOffCount = 0;
+            changeAlertCount = 0;
             alertDataPort = initAlertPort();
             if (alertDataPort == null) {
                 AISObjectList.setWirelessOK(false);
@@ -70,39 +66,45 @@ public class AlertTimerTask extends TimerTask {
             }
         }
 
-        String testAlertType = AISObjectList.getTestAlertType();
-        if (!testAlertType.isEmpty()) {
-            ArduinoUtil util = new ArduinoUtil(alertDataPort);
-            util.turnAlert(testAlertType, 0);
-            return;
-        }
-
         if (secCount++ >= resetSecond) {
             closePort();
         }
         AISObjectList.setWirelessOK(true);
-        if (!AISObjectList.isAnyShipDisplay()) {
+
+        String testAlertType = AISObjectList.getTestAlertType();
+        if (!testAlertType.isEmpty()) {
+            sendDataArduino(testAlertType, 0);
             return;
+        }
+        if (AISObjectList.isTestConnection()) {
+            closePort();
+            this.alertDataPort = initAlertPort();
+            AISObjectList.setTestConnection(false);
+            return;
+        }
+
+        if (!AISObjectList.isAnyShipDisplay()) {
+//            return;
         }
         AlertBean alert = AISObjectList.getAlert();
         if (alert == null) {
             return;
         }
-        if ((alertType.equals(AISBean.RED_ALERT) || alertType.equals(AISBean.YELLOW_ALERT))
-                && alert.getAlertArea().equals(AISBean.OFF_ALERT)) {
-            if (changeToOffCount++ < changeToOff) {
+        if (alertType.equals(alert.getAlertArea())) {
+            if (changeAlertCount++ < changeAlert) {
                 return;
             }
         }
-        changeToOffCount = 0;
-        ArduinoUtil util = new ArduinoUtil(alertDataPort);
-        alertType = util.turnAlert(alert.getAlertArea(), alert.getSoundType());
+        changeAlertCount = 0;
+        alertType = sendDataArduino(alert.getAlertArea(), alert.getSoundType());
     }
 
     private void closePort() {
         try {
-            alertDataPort.close();
-            alertDataPort = null;
+            if (alertDataPort != null) {
+                alertDataPort.close();
+                alertDataPort = null;
+            }
         } catch (Exception ex) {
 
         }
@@ -110,5 +112,18 @@ public class AlertTimerTask extends TimerTask {
 
     private SerialPort initAlertPort() {
         return SerialUtil.initAlertPort(configFileName, "wireless_port", "wireless_baudrate");
+    }
+
+    private String sendDataArduino(String light, int sound) {
+        if (alertDataPort != null) {
+            ArduinoUtil util = new ArduinoUtil(alertDataPort, this);
+            return util.turnAlert(light, sound);
+        }
+        return AISBean.OFF_ALERT;
+    }
+
+    @Override
+    public void terminatePort() {
+        closePort();
     }
 }

@@ -5,7 +5,6 @@
  */
 package com.buoctien.aisalert;
 
-import com.buoctien.aisalert.util.SerialUtil;
 import com.buoctien.aisalert.util.TimerUtil;
 import gnu.io.SerialPort;
 import java.util.TimerTask;
@@ -17,16 +16,17 @@ import java.util.TimerTask;
 public class AISTimerTask extends TimerTask {
 
     private AISThread aisThread = null;
-    private SerialPort dataPort;
-    private final String writtenFileName;
-    private final String configFileName;
+    private AISPortWrapper dataPort;
     private boolean scheduled;
+    private boolean isStop;
+    private final int resetSecond = 3600; // 1 tieng = 1 * 60 * 60
+    private int secCount = 0;
 
-    public AISTimerTask(SerialPort dataPort, String configFileName, String writtenFileName) {
+    public AISTimerTask(AISPortWrapper dataPort) {
         this.dataPort = dataPort;
-        this.configFileName = configFileName;
-        this.writtenFileName = writtenFileName;
-        scheduled = false;
+        this.scheduled = false;
+        this.isStop = false;
+        this.secCount = 0;
     }
 
     public synchronized void schedule(long delay, long period) {
@@ -38,30 +38,56 @@ public class AISTimerTask extends TimerTask {
 
     @Override
     public boolean cancel() {
-        if (aisThread != null && aisThread.isAlive()) {
+        closeThread();
+        return super.cancel();
+    }
+
+    private void closeThread() {
+        if (aisThread != null && !aisThread.isInterrupted()) {
+            aisThread.setCancel(true);
             aisThread.interrupt();
             aisThread = null;
+            this.isStop = true;
         }
-        return super.cancel();
     }
 
     @Override
     public void run() {
         try {
-            if (aisThread == null || aisThread.isInterrupted()) {
-                if (dataPort == null) {
-                    dataPort = SerialUtil.initAlertPort(configFileName, "ais_port", "ais_baudrate");
+            if (secCount++ >= resetSecond && AISObjectList.getListSize() == 0) {
+                if (dataPort != null) {
+                    dataPort.terminateAISPort();
+                    closeThread();
+                    this.isStop = false;
                 }
-                if (dataPort == null) {
-                    AISObjectList.setAisOK(false);
+                secCount = 0;
+                return;
+            }
+            if (aisThread == null || aisThread.isInterrupted()) {
+                if (this.isStop) {
                     return;
                 }
+                if (dataPort == null) {
+                    return;
+                }
+
+                SerialPort aisDataPort = dataPort.getAisDataPort();
+                if (aisDataPort == null) {
+                    aisDataPort = dataPort.openPort();
+                    if (aisDataPort == null) {
+                        AISObjectList.setAisOK(false);
+                        return;
+                    }
+                }
                 AISObjectList.setAisOK(true);
-                aisThread = new AISThread(writtenFileName, dataPort);
-                aisThread.start();
+                aisThread = new AISThread(aisDataPort);
+                if (!aisThread.isAlive()) {
+                    aisThread.start();
+                }
+                this.isStop = false;
+                System.out.println("New thread:" + aisThread);
             } else if (aisThread.isStoped()) {
-                aisThread.interrupt();
-                aisThread = null;
+                aisThread.run();
             }
         } catch (Exception ex) {
 

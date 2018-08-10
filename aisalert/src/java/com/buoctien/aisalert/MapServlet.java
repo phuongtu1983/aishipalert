@@ -46,6 +46,7 @@ public class MapServlet extends HttpServlet {
             throws ServletException, IOException {
         try {
             AISObjectList.setTestAlertType("");
+            AISObjectList.setTestConnection(false);
             request.setAttribute(StaticBean.ON_OFF, PublicObjects.isTurnOn() == true ? 1 : 0);
             RequestDispatcher dispatcher = request.getRequestDispatcher("map.jsp");
             dispatcher.forward(request, response);

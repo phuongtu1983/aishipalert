@@ -10,7 +10,6 @@ import com.buoctien.aisalert.geoposition.CoordinatesCalculations;
 import com.buoctien.aisalert.bean.AISBean;
 import com.buoctien.aisalert.bean.StaticBean;
 import com.buoctien.aisalert.util.AISUtil;
-import com.buoctien.aisalert.util.FileUtil;
 import dk.dma.ais.message.AisMessage;
 import dk.dma.ais.message.AisMessage1;
 import dk.dma.ais.message.AisMessage12;
@@ -34,15 +33,19 @@ import java.util.function.Consumer;
 public class AISThread extends Thread {
 
     private final SerialPort dataPort;
-    private final String writtenFileName;
     private boolean stoped;
+    private boolean cancel;
 
     private ArrayList emulatorAISData = new ArrayList();
 
-    public AISThread(String writtenFileName, SerialPort dataPort) {
-        this.writtenFileName = writtenFileName;
+    public AISThread( SerialPort dataPort) {
         this.dataPort = dataPort;
         this.stoped = false;
+        this.cancel = false;
+    }
+
+    public void setCancel(boolean cancel) {
+        this.cancel = cancel;
     }
 
     @Override
@@ -55,7 +58,6 @@ public class AISThread extends Thread {
         } catch (Exception ex) {
             this.stoped = true;
             System.out.println("run : " + ex);
-            FileUtil.writeToFile(writtenFileName, "run : " + ex);
         }
     }
 
@@ -70,6 +72,14 @@ public class AISThread extends Thread {
                 Consumer<AisMessage> handler = new Consumer<AisMessage>() {
                     @Override
                     public void accept(AisMessage aisMessage) {
+                        if (cancel) {
+                            if (reader != null) {
+                                reader.stopReader();
+                                if (!reader.isInterrupted()) {
+                                    reader.interrupt();
+                                }
+                            }
+                        }
                         aisMessageHandle(aisMessage);
                     }
                 };
@@ -91,7 +101,6 @@ public class AISThread extends Thread {
         } catch (Exception ex) {
             this.stoped = true;
             System.out.println("runFromSerialPort : " + ex);
-            FileUtil.writeToFile(writtenFileName, "runFromSerialPort : " + ex);
         }
     }
 
@@ -118,8 +127,8 @@ public class AISThread extends Thread {
                     double distance = getDistance(aisBean.getPosition());
                     if (oldBean != null) {
                         oldBean.setPosition(aisBean.getPosition());
-                        oldBean.setNavigation(distance < oldBean.getDistance() ? -1 : 1);
                         oldBean.setDistance(distance);
+                        oldBean.setNavigation(1);
                         oldBean.setAlertArea(AISBean.RED_ALERT);
                         if (oldBean.getNavigationImage() == 0) {
                             oldBean.setNavigationImage(aisBean.getPosition().getLongitude() < StaticBean.MidPointLongtitude ? -1 : 1);
@@ -135,8 +144,16 @@ public class AISThread extends Thread {
                         AISBean oldBean = AISObjectList.get(key);
                         double distance = getDistance(aisBean.getPosition());
                         if (oldBean != null) {
+                            int nav = distance < oldBean.getDistance() ? -1 : 1;
+                            if (oldBean.getNavigation() != 0 && oldBean.getNavigation() != nav) {
+                                if (oldBean.getDistance() > StaticBean.RedSmallRadius && oldBean.getDistance() < StaticBean.RedRadius
+                                        && distance > StaticBean.RedSmallRadius && distance < StaticBean.RedRadius
+                                        && getDistance(oldBean.getPosition(), aisBean.getPosition()) < StaticBean.RedRadius - StaticBean.RedSmallRadius) {
+                                    return;
+                                }
+                            }
                             oldBean.setPosition(aisBean.getPosition());
-                            oldBean.setNavigation(distance < oldBean.getDistance() ? -1 : 1);
+                            oldBean.setNavigation(nav);
                             oldBean.setDistance(distance);
                             if (oldBean.getNavigation() > 0) {
                                 oldBean.setAlertArea(AISBean.OFF_ALERT);
@@ -157,8 +174,16 @@ public class AISThread extends Thread {
                             AISBean oldBean = AISObjectList.get(key);
                             double distance = getDistance(aisBean.getPosition());
                             if (oldBean != null) {
+                                int nav = distance < oldBean.getDistance() ? -1 : 1;
+                                if (oldBean.getNavigation() != 0 && oldBean.getNavigation() != nav) {
+                                    if (oldBean.getDistance() > StaticBean.RedRadius && oldBean.getDistance() < StaticBean.YellowRadius
+                                            && distance > StaticBean.RedRadius && distance < StaticBean.YellowRadius
+                                            && getDistance(oldBean.getPosition(), aisBean.getPosition()) < StaticBean.YellowRadius - StaticBean.RedRadius) {
+                                        return;
+                                    }
+                                }
                                 oldBean.setPosition(aisBean.getPosition());
-                                oldBean.setNavigation(distance < oldBean.getDistance() ? -1 : 1);
+                                oldBean.setNavigation(nav);
                                 oldBean.setDistance(distance);
                                 if (oldBean.getNavigation() > 0) {
                                     oldBean.setAlertArea(AISBean.OFF_ALERT);
@@ -179,7 +204,6 @@ public class AISThread extends Thread {
                             double distance = getDistance(aisBean.getPosition());
                             if (oldBean != null) {
                                 oldBean.setPosition(aisBean.getPosition());
-                                oldBean.setNavigation(distance < oldBean.getDistance() ? -1 : 1);
                                 oldBean.setDistance(distance);
                                 oldBean.setAlertArea(AISBean.OFF_ALERT);
                                 if (oldBean.getNavigationImage() == 0) {
@@ -204,7 +228,6 @@ public class AISThread extends Thread {
             }
         } catch (Exception ex) {
             System.out.println("aisMessageHandle : " + ex);
-            FileUtil.writeToFile(writtenFileName, "aisMessageHandle : " + ex);
         }
     }
 
@@ -219,7 +242,6 @@ public class AISThread extends Thread {
             getStrToWrite(aisMessage, bean);
         } catch (Exception ex) {
             System.out.println("acceptAisMessage : " + ex);
-            FileUtil.writeToFile(writtenFileName, "acceptAisMessage : " + ex);
         }
         return bean;
     }
@@ -250,7 +272,6 @@ public class AISThread extends Thread {
             }
         } catch (Exception ex) {
             System.out.println("getStrToWrite : " + ex);
-            FileUtil.writeToFile(writtenFileName, "getStrToWrite : " + ex);
         }
         return result;
     }
@@ -262,7 +283,6 @@ public class AISThread extends Thread {
             }
         } catch (Exception ex) {
             System.out.println("checkWithinArea1000 : " + ex);
-            FileUtil.writeToFile(writtenFileName, "checkWithinArea1000 : " + ex);
         }
         return false;
     }
@@ -279,7 +299,6 @@ public class AISThread extends Thread {
             }
         } catch (Exception ex) {
             System.out.println("checkWithinArea500 : " + ex);
-            FileUtil.writeToFile(writtenFileName, "checkWithinArea500 : " + ex);
         }
         return false;
     }
@@ -296,7 +315,6 @@ public class AISThread extends Thread {
             }
         } catch (Exception ex) {
             System.out.println("checkWithinArea300 : " + ex);
-            FileUtil.writeToFile(writtenFileName, "checkWithinArea300 : " + ex);
         }
         return false;
     }
@@ -305,6 +323,12 @@ public class AISThread extends Thread {
         return CoordinatesCalculations.getDistanceBetweenTwoPoints(
                 new Coordinates(StaticBean.MidPointLatitude, StaticBean.MidPointLongtitude),
                 new Coordinates(newPost.getLatitude(), newPost.getLongitude()));
+    }
+
+    private double getDistance(dk.dma.enav.model.geometry.Position pos1, dk.dma.enav.model.geometry.Position pos2) {
+        return CoordinatesCalculations.getDistanceBetweenTwoPoints(
+                new Coordinates(pos1.getLatitude(), pos1.getLongitude()),
+                new Coordinates(pos2.getLatitude(), pos2.getLongitude()));
     }
 
     private void createEmulatorData() {

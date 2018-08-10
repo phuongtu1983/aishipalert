@@ -47,6 +47,7 @@ public class ControlServlet extends HttpServlet {
             throws ServletException, IOException {
         try {
             AISObjectList.setTestAlertType("");
+            AISObjectList.setTestConnection(false);
             String redirectPage = "mapservlet.do";
             String submited = request.getParameter("submited");
             if (submited != null && !submited.isEmpty()) {
