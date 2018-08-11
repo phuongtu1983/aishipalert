@@ -7,6 +7,7 @@ package com.buoctien.aisalert;
 
 import com.buoctien.aisalert.util.SerialUtil;
 import gnu.io.SerialPort;
+import java.util.Date;
 
 /**
  *
@@ -42,6 +43,7 @@ public class AISPortWrapper implements AISPortEvent {
 
     @Override
     public void terminateAISPort() {
+        System.out.println("terminateAISPort: " + new Date().toString());
         closePort();
     }
 

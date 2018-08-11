@@ -11,6 +11,7 @@ import com.buoctien.aisalert.util.ArduinoUtil;
 import com.buoctien.aisalert.util.SerialUtil;
 import com.buoctien.aisalert.util.TimerUtil;
 import gnu.io.SerialPort;
+import java.util.Date;
 import java.util.TimerTask;
 
 /**
@@ -24,7 +25,7 @@ public class AlertTimerTask extends TimerTask implements WirelessPortCloseEvent 
     private boolean scheduled;
     private int secCount = 0;
     private final int resetSecond = 7200; // 2 tieng = 2 * 60 * 60
-    private final int changeAlert = 60; // 2 lan
+    private final int changeAlert = 2; // 2 lan
     private String alertType = AISBean.OFF_ALERT;
     private int changeAlertCount = 0;
 
@@ -67,7 +68,9 @@ public class AlertTimerTask extends TimerTask implements WirelessPortCloseEvent 
         }
 
         if (secCount++ >= resetSecond) {
+            System.out.println("close Alert: " + new Date().toString());
             closePort();
+            return;
         }
         AISObjectList.setWirelessOK(true);
 
@@ -84,7 +87,7 @@ public class AlertTimerTask extends TimerTask implements WirelessPortCloseEvent 
         }
 
         if (!AISObjectList.isAnyShipDisplay()) {
-//            return;
+            return;
         }
         AlertBean alert = AISObjectList.getAlert();
         if (alert == null) {
@@ -111,6 +114,7 @@ public class AlertTimerTask extends TimerTask implements WirelessPortCloseEvent 
     }
 
     private SerialPort initAlertPort() {
+        System.out.println("initAlertPort: " + new Date().toString());
         return SerialUtil.initAlertPort(configFileName, "wireless_port", "wireless_baudrate");
     }
 

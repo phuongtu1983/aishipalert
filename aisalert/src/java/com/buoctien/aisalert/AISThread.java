@@ -35,17 +35,23 @@ public class AISThread extends Thread {
     private final SerialPort dataPort;
     private boolean stoped;
     private boolean cancel;
+    private boolean error;
 
     private ArrayList emulatorAISData = new ArrayList();
 
-    public AISThread( SerialPort dataPort) {
+    public AISThread(SerialPort dataPort) {
         this.dataPort = dataPort;
         this.stoped = false;
         this.cancel = false;
+        this.error = false;
     }
 
     public void setCancel(boolean cancel) {
         this.cancel = cancel;
+    }
+
+    public boolean isError() {
+        return error;
     }
 
     @Override
@@ -56,7 +62,7 @@ public class AISThread extends Thread {
 //            handleEmulateData();
             this.stoped = true;
         } catch (Exception ex) {
-            this.stoped = true;
+            this.error = true;
             System.out.println("run : " + ex);
         }
     }
@@ -75,9 +81,7 @@ public class AISThread extends Thread {
                         if (cancel) {
                             if (reader != null) {
                                 reader.stopReader();
-                                if (!reader.isInterrupted()) {
-                                    reader.interrupt();
-                                }
+                                return;
                             }
                         }
                         aisMessageHandle(aisMessage);
@@ -99,7 +103,7 @@ public class AISThread extends Thread {
                 reader.join();
             }
         } catch (Exception ex) {
-            this.stoped = true;
+            this.error = true;
             System.out.println("runFromSerialPort : " + ex);
         }
     }

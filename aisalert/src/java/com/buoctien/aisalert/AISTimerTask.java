@@ -7,6 +7,7 @@ package com.buoctien.aisalert;
 
 import com.buoctien.aisalert.util.TimerUtil;
 import gnu.io.SerialPort;
+import java.util.Date;
 import java.util.TimerTask;
 
 /**
@@ -81,13 +82,19 @@ public class AISTimerTask extends TimerTask {
                 }
                 AISObjectList.setAisOK(true);
                 aisThread = new AISThread(aisDataPort);
+                System.out.println("new Thread: " + new Date().toString());
                 if (!aisThread.isAlive()) {
                     aisThread.start();
                 }
                 this.isStop = false;
-                System.out.println("New thread:" + aisThread);
             } else if (aisThread.isStoped()) {
                 aisThread.run();
+            } else if (aisThread.isError()) {
+                if (dataPort != null) {
+                    dataPort.terminateAISPort();
+                    closeThread();
+                    this.isStop = false;
+                }
             }
         } catch (Exception ex) {
 
