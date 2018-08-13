@@ -38,6 +38,7 @@ public class AISPortWrapper implements AISPortEvent {
         if (aisDataPort != null) {
             aisDataPort.close();
             aisDataPort = null;
+            AISObjectList.setAisOK(false);
         }
     }
 

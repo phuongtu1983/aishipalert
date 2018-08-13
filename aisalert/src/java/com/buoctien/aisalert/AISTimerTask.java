@@ -47,7 +47,9 @@ public class AISTimerTask extends TimerTask {
             aisThread.setCancel(true);
             aisThread.interrupt();
             aisThread = null;
-            terminateAISPort();
+            if (dataPort != null) {
+                dataPort.terminateAISPort();
+            }
         }
         return super.cancel();
     }
@@ -63,14 +65,14 @@ public class AISTimerTask extends TimerTask {
                 return;
             }
             if (secCount++ >= resetSecond && AISObjectList.getListSize() == 0 && aisThread.isStoped()) {
-                System.out.println("terminateAISPort stopped: " + new Date().toString());
-                terminateAISPort();
-                secCount = 0;
-                noDataCount = 0;
+                System.out.println("AISTimerTask stopped: " + new Date().toString());
+                AISObjectList.setAisOK(false);
+                this.isStop = true;
+//                secCount = 0;
+//                noDataCount = 0;
                 return;
             }
             if (aisThread == null || aisThread.isInterrupted()) {
-
                 aisThread = new AISThread(aisDataPort);
                 System.out.println("new AISThread: " + new Date().toString());
                 if (!aisThread.isAlive()) {
@@ -79,11 +81,11 @@ public class AISTimerTask extends TimerTask {
             } else if (aisThread.isStoped()) {
                 if (!aisThread.isHasData()) {
                     if (noDataCount++ >= noDataSecond) {
-                        System.out.println("terminateAISPort no data: " + new Date().toString());
-                        terminateAISPort();
-                        secCount = 0;
-                        noDataCount = 0;
-                        aisThread.setHasData(true);
+                        System.out.println("AISTimerTask no data: " + new Date().toString());
+                        AISObjectList.setAisOK(false);
+                        this.isStop = true;
+//                        secCount = 0;
+//                        noDataCount = 0;
                         return;
                     }
                 } else {
@@ -93,12 +95,6 @@ public class AISTimerTask extends TimerTask {
             }
         } catch (Exception ex) {
 
-        }
-    }
-
-    private void terminateAISPort() {
-        if (dataPort != null) {
-            dataPort.terminateAISPort();
         }
     }
 }
