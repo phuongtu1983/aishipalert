@@ -30,7 +30,6 @@ public class SerialUtil {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
         }
         return null;
     }
@@ -49,7 +48,6 @@ public class SerialUtil {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
         }
         return ports;
     }
@@ -64,8 +62,7 @@ public class SerialUtil {
                     return (new SerialUtil()).getSerialPort(portName, Integer.parseInt(baudrate));
                 }
             }
-        } catch (Exception ex) {
-
+        } catch (Exception e) {
         }
         return null;
     }

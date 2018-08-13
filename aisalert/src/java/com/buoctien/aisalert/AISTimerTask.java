@@ -15,16 +15,16 @@ import java.util.TimerTask;
  * @author DELL
  */
 public class AISTimerTask extends TimerTask {
-    
+
     private AISThread aisThread = null;
-    private AISPortWrapper dataPort;
+    private AISPortWrapper dataPort = null;
     private boolean scheduled;
     private boolean isStop;
-    private final int resetSecond = 3600; // 1 tieng = 1 * 60 * 60
+    private final int resetSecond = 7200; // 2 tieng = 2 * 60 * 60
     private int secCount = 0;
-    private final int noDataSecond = 3; // 3 lan
+    private final int noDataSecond = 10; // 10 lan
     private int noDataCount = 0;
-    
+
     public AISTimerTask(AISPortWrapper dataPort) {
         this.dataPort = dataPort;
         this.scheduled = false;
@@ -32,56 +32,56 @@ public class AISTimerTask extends TimerTask {
         this.secCount = 0;
         this.noDataCount = 0;
     }
-    
+
     public synchronized void schedule(long delay, long period) {
         if (!scheduled) {
             scheduled = true;
             TimerUtil.getInstance().schedule(this, delay, period);
         }
     }
-    
+
     @Override
     public boolean cancel() {
         if (aisThread != null && !aisThread.isInterrupted()) {
+            this.isStop = true;
             aisThread.setCancel(true);
             aisThread.interrupt();
             aisThread = null;
-            dataPort.terminateAISPort();
-            this.isStop = true;
+            terminateAISPort();
         }
         return super.cancel();
     }
-    
+
     @Override
     public void run() {
         try {
             if (this.isStop || dataPort == null) {
                 return;
             }
+            SerialPort aisDataPort = dataPort.getAisDataPort();
+            if (aisDataPort == null) {
+                return;
+            }
             if (secCount++ >= resetSecond && AISObjectList.getListSize() == 0 && aisThread.isStoped()) {
-                reconnectPort();
+                System.out.println("terminateAISPort stopped: " + new Date().toString());
+                terminateAISPort();
                 secCount = 0;
+                noDataCount = 0;
                 return;
             }
             if (aisThread == null || aisThread.isInterrupted()) {
-                SerialPort aisDataPort = dataPort.getAisDataPort();
-                if (aisDataPort == null) {
-                    aisDataPort = dataPort.openPort();
-                    if (aisDataPort == null) {
-                        AISObjectList.setAisOK(false);
-                        return;
-                    }
-                }
-                AISObjectList.setAisOK(true);
+
                 aisThread = new AISThread(aisDataPort);
-                System.out.println("new Thread: " + new Date().toString());
+                System.out.println("new AISThread: " + new Date().toString());
                 if (!aisThread.isAlive()) {
                     aisThread.start();
                 }
             } else if (aisThread.isStoped()) {
                 if (!aisThread.isHasData()) {
                     if (noDataCount++ >= noDataSecond) {
-                        reconnectPort();
+                        System.out.println("terminateAISPort no data: " + new Date().toString());
+                        terminateAISPort();
+                        secCount = 0;
                         noDataCount = 0;
                         aisThread.setHasData(true);
                         return;
@@ -92,14 +92,13 @@ public class AISTimerTask extends TimerTask {
                 aisThread.read();
             }
         } catch (Exception ex) {
-            
+
         }
     }
-    
-    private void reconnectPort() {
+
+    private void terminateAISPort() {
         if (dataPort != null) {
             dataPort.terminateAISPort();
-            dataPort.openPort();
         }
     }
 }

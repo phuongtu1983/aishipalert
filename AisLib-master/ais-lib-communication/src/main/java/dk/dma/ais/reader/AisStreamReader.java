@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import dk.dma.ais.sentence.Abk;
+import java.util.Date;
 import java.util.function.Consumer;
 
 /**
@@ -45,6 +46,7 @@ public class AisStreamReader extends AisReader {
     @Override
     public void run() {
         try {
+            this.setStopped(false);
             readLoop(stream);
         } catch (IOException e) {
             if (!isShutdown()) {
@@ -67,6 +69,7 @@ public class AisStreamReader extends AisReader {
 
     @Override
     public void stopReader() {
+        this.setStopped(true);
         super.stopReader();
         try {
             stream.close();

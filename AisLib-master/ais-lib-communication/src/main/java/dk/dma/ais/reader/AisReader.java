@@ -46,43 +46,68 @@ import java.util.function.Consumer;
 import static java.util.Objects.requireNonNull;
 
 /**
- * Abstract base for classes reading from an AIS source. Also handles ABK and a number of proprietary sentences.
+ * Abstract base for classes reading from an AIS source. Also handles ABK and a
+ * number of proprietary sentences.
  */
 @ManagedResource
 public abstract class AisReader extends Thread {
 
     static final Logger LOG = LoggerFactory.getLogger(AisReader.class);
 
-    /** The number of bytes read by this reader. */
-    private final AtomicLong bytesRead = new AtomicLong();;
+    /**
+     * The number of bytes read by this reader.
+     */
+    private final AtomicLong bytesRead = new AtomicLong();
+    ;
 
     /** The number of bytes written by this reader. */
     private final AtomicLong bytesWritten = new AtomicLong();
 
-    /** List receivers for the AIS messages. */
+    /**
+     * List receivers for the AIS messages.
+     */
     protected final CopyOnWriteArrayList<Consumer<AisMessage>> handlers = new CopyOnWriteArrayList<>();
 
-    /** The number of lines read by this reader. */
+    /**
+     * The number of lines read by this reader.
+     */
     private final AtomicLong linesRead = new AtomicLong();
 
-    /** List of packet handlers. */
+    /**
+     * List of packet handlers.
+     */
     protected final CopyOnWriteArrayList<Consumer<? super AisPacket>> packetHandlers = new CopyOnWriteArrayList<>();
 
-    /** A pool of sending threads. A sending thread handles the sending and reception of ABK message. */
+    /**
+     * A pool of sending threads. A sending thread handles the sending and
+     * reception of ABK message.
+     */
     protected final SendThreadPool sendThreadPool = new SendThreadPool();
 
-    /** Flag that indicates the reader should shutdown */
+    /**
+     * Flag that indicates the reader should shutdown
+     */
     final CountDownLatch shutdownLatch = new CountDownLatch(1);
 
-    /** The source id. */
+    /**
+     * The source id.
+     */
     private String sourceId;
-    
-    /** Transformer adding source id */
+
+    /**
+     * Transformer adding source id
+     */
     private AisPacketTaggingTransformer transformer;
+
+    private boolean stopped;
+
+    public void setStopped(boolean stopped) {
+        this.stopped = stopped;
+    }
 
     /**
      * The method to do the actual sending
-     * 
+     *
      * @param sendRequest
      * @param resultListener
      * @param out
@@ -136,7 +161,7 @@ public abstract class AisReader extends Thread {
 
     /**
      * Get the status of the connection, either connected or disconnected
-     * 
+     *
      * @return status
      */
     @ManagedAttribute
@@ -148,9 +173,8 @@ public abstract class AisReader extends Thread {
 
     /**
      * The main read loop to use if sentences in stream
-     * 
-     * @param stream
-     *            the generic input stream to read from
+     *
+     * @param stream the generic input stream to read from
      * @throws IOException
      */
     protected void readLoop(InputStream stream) throws IOException {
@@ -161,15 +185,15 @@ public abstract class AisReader extends Thread {
             }
         }) {
             AisPacket packet = null;
-            while ((packet = s.readPacket()) != null) {
+            while ((packet = s.readPacket()) != null && !stopped) {
                 distribute(packet);
             }
         }
     }
-    
+
     protected void distribute(AisPacket packet) {
         linesRead.incrementAndGet();
-        
+
         if (transformer != null) { // tag the packet with the source if non-null
             packet = transformer.transform(packet);
         }
@@ -200,7 +224,7 @@ public abstract class AisReader extends Thread {
 
     /**
      * Add an AIS handler
-     * 
+     *
      * @param aisHandler
      */
     public void registerHandler(Consumer<AisMessage> aisHandler) {
@@ -209,7 +233,7 @@ public abstract class AisReader extends Thread {
 
     /**
      * Add a packet handler
-     * 
+     *
      * @param packetHandler
      */
     public void registerPacketHandler(Consumer<? super AisPacket> packetConsumer) {
@@ -218,7 +242,7 @@ public abstract class AisReader extends Thread {
 
     /**
      * Add a queue for receiving messages
-     * 
+     *
      * @param queue
      */
     public void registerQueue(final IMessageQueue<AisMessage> queue) {
@@ -236,8 +260,9 @@ public abstract class AisReader extends Thread {
     }
 
     /**
-     * Make a new queue and reader for the queue. Start and attach to to given handler.
-     * 
+     * Make a new queue and reader for the queue. Start and attach to to given
+     * handler.
+     *
      * @param handler
      */
     public void registerQueueHandler(IQueueEntryHandler<AisMessage> handler) {
@@ -249,7 +274,7 @@ public abstract class AisReader extends Thread {
 
     /**
      * Sending with 60 sec default timeout
-     * 
+     *
      * @param aisMessage
      * @param sequence
      * @param destination
@@ -263,7 +288,7 @@ public abstract class AisReader extends Thread {
 
     /**
      * Blocking method to send message in an easy way
-     * 
+     *
      * @param aisMessage
      * @param sequence
      * @param destination
@@ -281,10 +306,9 @@ public abstract class AisReader extends Thread {
 
     /**
      * Method to send addressed or broadcast AIS messages (ABM or BBM).
-     * 
+     *
      * @param sendRequest
-     * @param resultListener
-     *            A class to handle the result when it is ready.
+     * @param resultListener A class to handle the result when it is ready.
      */
     public abstract void send(SendRequest sendRequest, Consumer<Abk> resultListener) throws SendException;
 
@@ -309,7 +333,7 @@ public abstract class AisReader extends Thread {
 
     /**
      * Returns a ais packet stream.
-     * 
+     *
      * @return the stream
      */
     public AisPacketStream stream() {

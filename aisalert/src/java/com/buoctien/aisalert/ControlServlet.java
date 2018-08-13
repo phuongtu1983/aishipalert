@@ -52,7 +52,7 @@ public class ControlServlet extends HttpServlet {
             String submited = request.getParameter("submited");
             if (submited != null && !submited.isEmpty()) {
                 if (request.getParameter("turnon") != null) {
-                    PublicObjects.initObjects(this.getServletContext());
+                    PublicObjects.initObjects(request.getServletContext().getRealPath("/config.properties"));
                 } else if (request.getParameter("turnoff") != null) {
                     PublicObjects.destroyObjects();
                 }else if (request.getParameter("configports") != null) {

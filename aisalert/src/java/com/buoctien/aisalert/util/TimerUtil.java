@@ -7,6 +7,7 @@ package com.buoctien.aisalert.util;
 
 import com.buoctien.aisalert.AISTimerTask;
 import com.buoctien.aisalert.AlertTimerTask;
+import com.buoctien.aisalert.RepairConnectionTimerTask;
 import java.util.Timer;
 
 /**
@@ -54,6 +55,16 @@ public class TimerUtil {
     }
 
     public void schedule(AlertTimerTask task, long delay, long period) {
+        if (!isCanceled) {
+            try {
+                timer.schedule(task, delay, period);
+            } catch (IllegalStateException ex) {
+                reloadTimer();
+            }
+        }
+    }
+    
+    public void schedule(RepairConnectionTimerTask task, long delay, long period) {
         if (!isCanceled) {
             try {
                 timer.schedule(task, delay, period);

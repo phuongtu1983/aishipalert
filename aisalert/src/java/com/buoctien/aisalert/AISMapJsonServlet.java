@@ -52,14 +52,14 @@ public class AISMapJsonServlet extends HttpServlet {
         response.setHeader("Cache-Control", "no-cache");
         try {
             ArrayList list = AISObjectList.getList();
-            AISBean obj = null;
+            AISBean obj;
             String jsonResult = "";
-            long diffSec = 0;
-            String diffSecString = "";
+            long diffSec;
+            String diffSecString;
 //            int[] allowNavigation = {0, 7, 8, 9, 10, 14};
             for (int i = 0; i < list.size(); i++) {
                 obj = (AISBean) list.get(i);
-                if (obj.getDistance() > StaticBean.DisplayRadius) {
+                if (obj.getDistance() > StaticBean.DISPLAYRADIUS) {
                     continue;
                 }
                 String latitude = "", longtitude = "";

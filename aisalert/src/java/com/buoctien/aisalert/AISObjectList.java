@@ -23,8 +23,18 @@ public class AISObjectList {
     private static String testAlertType = AISBean.OFF_ALERT;
     private static boolean testConnection = false;
 
+    public static void initObjects() {
+        if (aisList != null) {
+            aisList.clear();
+        }
+        aisOK = false;
+        wirelessOK = false;
+        testAlertType = AISBean.OFF_ALERT;
+        testConnection = false;
+    }
+
     public static void addObject(AISBean bean) {
-        AISBean obj = null;
+        AISBean obj;
         for (int i = 0; i < aisList.size(); i++) {
             obj = (AISBean) aisList.get(i);
             if (obj.getMMSI().equals(bean.getMMSI())) {
@@ -36,7 +46,7 @@ public class AISObjectList {
     }
 
     public static void removeObject(AISBean bean) {
-        AISBean obj = null;
+        AISBean obj;
         for (int i = 0; i < aisList.size(); i++) {
             obj = (AISBean) aisList.get(i);
             if (obj.getMMSI().equals(bean.getMMSI())) {
@@ -47,7 +57,7 @@ public class AISObjectList {
     }
 
     public static boolean isContains(String key) {
-        AISBean obj = null;
+        AISBean obj;
         for (int i = 0; i < aisList.size(); i++) {
             obj = (AISBean) aisList.get(i);
             if (obj.getMMSI().equals(key)) {
@@ -58,7 +68,7 @@ public class AISObjectList {
     }
 
     public static AISBean get(String key) {
-        AISBean obj = null;
+        AISBean obj;
         for (int i = 0; i < aisList.size(); i++) {
             obj = (AISBean) aisList.get(i);
             if (obj.getMMSI().equals(key)) {
@@ -80,10 +90,10 @@ public class AISObjectList {
     }
 
     public static boolean isAnyShipDisplay() {
-        AISBean obj = null;
+        AISBean obj;
         for (int i = 0; i < aisList.size(); i++) {
             obj = (AISBean) aisList.get(i);
-            if (obj.getDistance() < StaticBean.DisplayRadius) {
+            if (obj.getDistance() < StaticBean.DISPLAYRADIUS) {
                 return true;
             }
         }
@@ -91,10 +101,10 @@ public class AISObjectList {
     }
 
     public static AlertBean getAlert() {
-        AISBean obj = null;
+        AISBean obj;
         AlertBean resultBean = new AlertBean();
         long currentMilisec = new Date().getTime();
-        long hours = 0;
+        long hours;
         for (int i = 0; i < aisList.size(); i++) {
             obj = (AISBean) aisList.get(i);
             if (obj.getMilisec() != 0) {
@@ -126,10 +136,7 @@ public class AISObjectList {
     }
 
     public static void destroyObjects() {
-        if (aisList == null) {
-            return;
-        }
-        aisList.clear();
+        initObjects();
     }
 
     public static synchronized boolean isAisOK() {
