@@ -35,7 +35,7 @@ public class AISThread extends Thread {
     private final SerialPort dataPort;
     private boolean stoped;
     private boolean cancel;
-    private boolean error;
+    private boolean hasData;
 
     private ArrayList emulatorAISData = new ArrayList();
 
@@ -43,32 +43,46 @@ public class AISThread extends Thread {
         this.dataPort = dataPort;
         this.stoped = false;
         this.cancel = false;
-        this.error = false;
+        this.hasData = false;
     }
 
     public void setCancel(boolean cancel) {
         this.cancel = cancel;
     }
 
-    public boolean isError() {
-        return error;
+    public boolean isHasData() {
+        return hasData;
+    }
+
+    public void setHasData(boolean hasData) {
+        this.hasData = hasData;
+    }
+
+    public boolean isStoped() {
+        return stoped;
     }
 
     @Override
     public void run() {
         try {
+            read();
+        } catch (Exception ex) {
+            System.out.println("run : " + ex);
+        }
+    }
+
+    public void read() {
+        try {
+            this.stoped = false;
+            this.cancel = false;
+            this.hasData = false;
             runFromSerialPort();
 //            createEmulatorData();
 //            handleEmulateData();
             this.stoped = true;
         } catch (Exception ex) {
-            this.error = true;
             System.out.println("run : " + ex);
         }
-    }
-
-    public boolean isStoped() {
-        return stoped;
     }
 
     private void runFromSerialPort() {
@@ -78,6 +92,7 @@ public class AISThread extends Thread {
                 Consumer<AisMessage> handler = new Consumer<AisMessage>() {
                     @Override
                     public void accept(AisMessage aisMessage) {
+                        hasData = true;
                         if (cancel) {
                             if (reader != null) {
                                 reader.stopReader();
@@ -103,7 +118,6 @@ public class AISThread extends Thread {
                 reader.join();
             }
         } catch (Exception ex) {
-            this.error = true;
             System.out.println("runFromSerialPort : " + ex);
         }
     }
@@ -282,7 +296,8 @@ public class AISThread extends Thread {
 
     private boolean checkOutsideArea(dk.dma.enav.model.geometry.Position position) {
         try {
-            if (CoordinatesCalculations.getDistanceBetweenTwoPoints(new Coordinates(position.getLatitude(), position.getLongitude()), new Coordinates(StaticBean.MidPointLatitude, StaticBean.MidPointLongtitude)) > StaticBean.OutsideRadius) {
+            double a = CoordinatesCalculations.getDistanceBetweenTwoPoints(new Coordinates(position.getLatitude(), position.getLongitude()), new Coordinates(StaticBean.MidPointLatitude, StaticBean.MidPointLongtitude));
+            if (a > StaticBean.OutsideRadius) {
                 return true;
             }
         } catch (Exception ex) {
@@ -469,6 +484,5 @@ public class AISThread extends Thread {
 
             }
         }
-        this.stoped = true;
     }
 }

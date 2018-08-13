@@ -44,17 +44,13 @@ public class PublicObjects {
 
     public static void destroyObjects() {
         try {
-            if (aisPort != null) {
-                aisPort.closePort();
-                aisPort = null;
+            if (alertTimer != null) {
+                alertTimer.cancel();
+                alertTimer = null;
             }
             if (aisTimer != null) {
                 aisTimer.cancel();
                 aisTimer = null;
-            }
-            if (alertTimer != null) {
-                alertTimer.cancel();
-                alertTimer = null;
             }
             AISObjectList.destroyObjects();
             System.out.println("On Load Servlet stopped");
@@ -64,7 +60,8 @@ public class PublicObjects {
     }
 
     public static boolean isTurnOn() {
-        if (aisTimer == null || alertTimer == null) {
+//        if (aisTimer == null || alertTimer == null) {
+        if (aisTimer == null) {
             return false;
         } else {
             return true;
