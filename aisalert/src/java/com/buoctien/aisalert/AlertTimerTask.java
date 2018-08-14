@@ -68,6 +68,7 @@ public class AlertTimerTask extends TimerTask implements WirelessPortCloseEvent 
         }
 
         if (secCount++ >= resetSecond) {
+            System.out.println("closeAlertPort expired: " + new Date().toString());
             closePort();
             return;
         }
