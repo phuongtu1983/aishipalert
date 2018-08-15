@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
+    <servlet>
+        <servlet-name>OnLoadServlet</servlet-name>
+        <servlet-class>com.buoctien.alert.OnLoadServlet</servlet-class>
+        <load-on-startup>0</load-on-startup>
+    </servlet>
+    <servlet>
+        <servlet-name>COMConfigAlert</servlet-name>
+        <servlet-class>com.buoctien.alert.COMConfigAlert</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>MainPage</servlet-name>
+        <servlet-class>com.buoctien.alert.MainPage</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>OnLoadServlet</servlet-name>
+        <url-pattern>/OnLoadServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>COMConfigAlert</servlet-name>
+        <url-pattern>/comconfigalert.do</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>MainPage</servlet-name>
+        <url-pattern>/mainpage.do</url-pattern>
+    </servlet-mapping>
+    <session-config>
+        <session-timeout>
+            30
+        </session-timeout>
+    </session-config>
+</web-app>

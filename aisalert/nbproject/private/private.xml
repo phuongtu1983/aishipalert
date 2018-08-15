@@ -2,15 +2,6 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group>
-            <file>file:/E:/projects/Cienco4/aishipalert/aisalert/src/java/com/buoctien/aisalert/AISPortWrapper.java</file>
-            <file>file:/E:/projects/Cienco4/aishipalert/aisalert/src/java/com/buoctien/aisalert/PublicObjects.java</file>
-            <file>file:/E:/projects/Cienco4/aishipalert/aisalert/src/java/com/buoctien/aisalert/AISTimerTask.java</file>
-            <file>file:/E:/projects/Cienco4/aishipalert/aisalert/src/java/com/buoctien/aisalert/AISThread.java</file>
-            <file>file:/E:/projects/Cienco4/aishipalert/aisalert/src/java/com/buoctien/aisalert/bean/StaticBean.java</file>
-            <file>file:/E:/projects/Cienco4/aishipalert/aisalert/src/java/com/buoctien/aisalert/AlertTimerTask.java</file>
-            <file>file:/E:/projects/Cienco4/aishipalert/aisalert/src/java/com/buoctien/aisalert/AISTimerTaskWrapper.java</file>
-            <file>file:/E:/projects/Cienco4/aishipalert/aisalert/web/config.properties</file>
-        </group>
+        <group/>
     </open-files>
 </project-private>
