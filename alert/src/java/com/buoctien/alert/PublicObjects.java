@@ -35,7 +35,7 @@ public class PublicObjects {
             if (alertTimer == null) {
                 alertTimer = new AlertTimerTask(configFileName);
                 alertTimer.run();
-                alertTimer.schedule(0, 1000);
+                alertTimer.schedule(0, 2000);
             }
         } catch (Exception ex) {
         }

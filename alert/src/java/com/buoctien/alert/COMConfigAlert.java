@@ -59,6 +59,7 @@ public class COMConfigAlert extends HttpServlet {
                         Properties props = new Properties();
                         props.setProperty("wireless_port", request.getParameter("wirelessPort") == null ? "" : request.getParameter("wirelessPort"));
                         props.setProperty("wireless_baudrate", request.getParameter("wirelessBaudrate") == null ? "" : request.getParameter("wirelessBaudrate"));
+                        props.setProperty("ais_url", request.getParameter("aisUrl") == null ? "" : request.getParameter("aisUrl"));
                         ConfigUtil.saveConfig(fileName, props);
                     } catch (Exception ex) {
                     }

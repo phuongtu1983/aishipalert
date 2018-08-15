@@ -16,7 +16,7 @@ public class AlertBean {
 
     public AlertBean() {
         this.soundType = -1;
-        this.alertArea = AISBean.OFF_ALERT;
+        this.alertArea = "";
     }
 
     public AlertBean(int soundType, String alertArea) {

@@ -68,8 +68,6 @@ public class AISTimerTask extends TimerTask {
                 System.out.println("AISTimerTask stopped: " + new Date().toString());
                 AISObjectList.setAisOK(false);
                 this.isStop = true;
-//                secCount = 0;
-//                noDataCount = 0;
                 return;
             }
             if (aisThread == null || aisThread.isInterrupted()) {
@@ -84,8 +82,6 @@ public class AISTimerTask extends TimerTask {
                         System.out.println("AISTimerTask no data: " + new Date().toString());
                         AISObjectList.setAisOK(false);
                         this.isStop = true;
-//                        secCount = 0;
-//                        noDataCount = 0;
                         return;
                     }
                 } else {

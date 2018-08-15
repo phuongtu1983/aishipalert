@@ -5,7 +5,6 @@
  */
 package com.buoctien.alert;
 
-import com.buoctien.alert.bean.AISBean;
 import com.buoctien.alert.bean.AlertBean;
 import com.buoctien.alert.util.WebServiceUtil;
 import com.google.gson.Gson;
@@ -17,12 +16,12 @@ import com.google.gson.Gson;
 public class AISObjectList {
 
     private static boolean wirelessOK = false;
-    private static String testAlertType = AISBean.OFF_ALERT;
+    private static String testAlertType = "";
     private static boolean testConnection = false;
 
     public static void initObjects() {
         wirelessOK = false;
-        testAlertType = AISBean.OFF_ALERT;
+        testAlertType = "";
         testConnection = false;
     }
 

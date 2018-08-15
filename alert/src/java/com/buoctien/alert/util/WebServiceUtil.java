@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Date;
 
 /**
  *
@@ -33,6 +34,7 @@ public class WebServiceUtil {
             }
             BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
             output = br.readLine();
+//            System.out.println("output " + new Date().toString() + ": " + output);
             conn.disconnect();
         } catch (MalformedURLException e) {
             System.out.println("MalformedURLException: " + e);

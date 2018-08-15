@@ -23,7 +23,8 @@
                     ArrayList port = (ArrayList) request.getAttribute(StaticBean.COM_PORTS);
                     String wirelessPort = props.getProperty("wireless_port");
                     String wirelessBaudrate = props.getProperty("wireless_baudrate");
-                    String wirelessStatus = (String)request.getAttribute("wireless_status");
+                    String aisUrl = props.getProperty("ais_url");
+                    String wirelessStatus = (String)request.getAttribute("wireless_status");  
                 %>
                 <tr>
                     <td height='100' style='padding-right: 10px'>Wireless (Profolic USB to Serial Comm Port)- Baudrate</td>
@@ -47,6 +48,12 @@
                     </td>
                     <td>
                         <input type='text' name='wirelessBaudrate' value='<%=wirelessBaudrate%>'>
+                    </td>
+                </tr>
+                <tr>
+                    <td>AIS url</td>
+                    <td colspan="2">
+                        <input type='text' name='aisUrl' value='<%=aisUrl%>' size="30">
                     </td>
                 </tr>
                 <tr>

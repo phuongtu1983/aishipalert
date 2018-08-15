@@ -18,7 +18,7 @@ public class StaticBean {
     public static final double MIDPOINTLATITUDE = 10.663402010340304;
     public static double MIDPOINTLONGTITUDE = 106.79608941078186;
 
-    public static final int OUTSIDERADIUS = 3000;
+    public static final int OUTSIDERADIUS = 2000;
     public static final int DISPLAYRADIUS = 1000;
     public static final int YELLOWRADIUS = 520;
     public static final int REDRADIUS = 314;

@@ -23,7 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import dk.dma.ais.sentence.Abk;
-import java.util.Date;
 import java.util.function.Consumer;
 
 /**
@@ -50,7 +49,7 @@ public class AisStreamReader extends AisReader {
             readLoop(stream);
         } catch (IOException e) {
             if (!isShutdown()) {
-                LOG.error("Failed to read stream: " + e.getMessage());
+                System.out.println(e.getMessage());
             }
         }
         done = true;

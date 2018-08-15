@@ -25,7 +25,7 @@ public class AlertTimerTask extends TimerTask implements WirelessPortCloseEvent 
     private boolean scheduled;
     private int secCount = 0;
     private final int resetSecond = 7200; // 2 tieng = 2 * 60 * 60
-    private final int changeAlert = 10; // 2 lan
+    private final int changeAlert = 1; // 2 lan
     private String alertType = AISBean.OFF_ALERT;
     private int changeAlertCount = 0;
 
@@ -89,7 +89,6 @@ public class AlertTimerTask extends TimerTask implements WirelessPortCloseEvent 
         if (alert == null || alert.getAlertArea().isEmpty()) {
             return;
         }
-        System.out.println("alert: " + alert.getAlertArea());
         if (alertType.equals(alert.getAlertArea())) {
             if (changeAlertCount++ < changeAlert) {
                 return;
