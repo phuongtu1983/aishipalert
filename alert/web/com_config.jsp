@@ -24,10 +24,10 @@
                     String wirelessPort = props.getProperty("wireless_port");
                     String wirelessBaudrate = props.getProperty("wireless_baudrate");
                     String aisUrl = props.getProperty("ais_url");
-                    String wirelessStatus = (String)request.getAttribute("wireless_status");  
+                    String wirelessStatus = (String) request.getAttribute("wireless_status");
                 %>
                 <tr>
-                    <td height='100' style='padding-right: 10px'>Wireless (Profolic USB to Serial Comm Port)- Baudrate</td>
+                    <td style='padding-right: 10px'>Profolic USB to Serial Comm Port - Baudrate</td>
                     <td>
                         <select name="wirelessPort">
                             <%
@@ -57,15 +57,9 @@
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="3">
-                        <input type="submit" name="config" value="Submit"/>
-                        <input type="hidden" name="save" value="1"/>
-                    </td>
-                </tr>
-                <tr>
                     <td>Wireless connect status: <%=wirelessStatus%></td>
                     <td colspan="2">
-                        <input type="submit" name="testconnect" value="Test connect"/>
+                        <input type="submit" name="testconnect" value="Connect"/>
                     </td>
                 </tr>
                 <tr>
@@ -73,6 +67,25 @@
                         <input type="submit" name="redalert" value="Test Red Alert"/>
                         <input type="submit" name="yellowalert" value="Test Yellow Alert"/>
                         <input type="submit" name="turnoffalert" value="Turn off Alert"/>
+                    </td>
+                    <td colspan="2"><input type="submit" name="endtest" value="Stop test"/></td>
+                </tr>
+                <tr>
+                    <td><input type="submit" name="config" value="Submit"/></td>
+                    <td colspan="2">
+                        <%
+                            int isOn = (int) request.getAttribute(StaticBean.ON_OFF);
+                            if (isOn == 1) {
+                        %>
+                        <input type="submit" name="turnoff" value="Turn off"/>
+                        <%
+                        } else {
+                        %>
+                        <input type="submit" name="turnon" value="Turn on"/>
+                        <%
+                            }
+                        %>
+                        <input type="hidden" name="save" value="1"/>
                     </td>
                 </tr>
             </table>

@@ -23,6 +23,7 @@ public class GetAlertService {
     @Produces(MediaType.APPLICATION_JSON)
     public AlertBean getAlert() {
         AlertBean alert = new AlertBean();
+        alert.setAlertArea("");
         if (AISObjectList.isAnyShipDisplay()) {
             alert = AISObjectList.getAlert();
         }

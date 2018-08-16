@@ -69,12 +69,18 @@ public class COMConfigAlert extends HttpServlet {
                     AISObjectList.setTestAlertType(AISBean.YELLOW_ALERT);
                 } else if (request.getParameter("turnoffalert") != null) {
                     AISObjectList.setTestAlertType(AISBean.OFF_ALERT);
+                } else if (request.getParameter("endtest") != null) {
+                    AISObjectList.setTestAlertType("");
                 } else if (request.getParameter("tomainpage") != null) {
                     RequestDispatcher dispatcher = request.getRequestDispatcher("mainpage.do");
                     dispatcher.forward(request, response);
                     return;
                 } else if (request.getParameter("testconnect") != null) {
                     AISObjectList.setTestConnection(true);
+                } else if (request.getParameter("turnon") != null) {
+                    PublicObjects.initObjects(request.getServletContext().getRealPath("/config.properties"));
+                } else if (request.getParameter("turnoff") != null) {
+                    PublicObjects.destroyObjects();
                 }
 
             }
@@ -83,6 +89,8 @@ public class COMConfigAlert extends HttpServlet {
 
             ArrayList ports = SerialUtil.getSerialPorts();
             request.setAttribute(StaticBean.COM_PORTS, ports);
+
+            request.setAttribute(StaticBean.ON_OFF, PublicObjects.isTurnOn() == true ? 1 : 0);
 
             request.setAttribute("wireless_status", (AISObjectList.isWirelessOK() ? "Connected" : "Not Connected"));
             RequestDispatcher dispatcher = request.getRequestDispatcher("com_config.jsp");
