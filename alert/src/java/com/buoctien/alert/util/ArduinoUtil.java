@@ -31,7 +31,8 @@ public class ArduinoUtil {
         OutputStream outputStream = null;
         try {
             outputStream = serialPort.getOutputStream();
-            if (alert.equals(AISBean.RED_ALERT)) {
+//            if (alert.equals(AISBean.RED_ALERT)) {
+            if (alert.equals(AISBean.YELLOW_ALERT)) { //phuongtu: chuyen mach do thanh mach vang
                 switch (soundType) {
                     case 0:
                         outputStream.write(65);
@@ -44,7 +45,8 @@ public class ArduinoUtil {
                         break;
                 }
                 return AISBean.RED_ALERT;
-            } else if (alert.equals(AISBean.YELLOW_ALERT)) {
+//            } else if (alert.equals(AISBean.YELLOW_ALERT)) {
+            } else if (alert.equals(AISBean.RED_ALERT)) { //phuongtu: chuyen mach vang thanh mach do
                 switch (soundType) {
                     case 0:
                         outputStream.write(68);

@@ -25,9 +25,9 @@ public class AlertTimerTask extends TimerTask implements WirelessPortCloseEvent 
     private boolean scheduled;
     private int secCount = 0;
     private final int resetSecond = 7200; // 2 tieng = 2 * 60 * 60
-    private final int changeAlert = 1; // 2 lan
+//    private final int changeAlert = 1; // 2 lan
     private String alertType = AISBean.OFF_ALERT;
-    private int changeAlertCount = 0;
+//    private int changeAlertCount = 0;
 
     public AlertTimerTask(String configFileName) {
         this.configFileName = configFileName;
@@ -59,7 +59,7 @@ public class AlertTimerTask extends TimerTask implements WirelessPortCloseEvent 
         if (alertDataPort == null) {
             secCount = 0;
             alertType = AISBean.OFF_ALERT;
-            changeAlertCount = 0;
+//            changeAlertCount = 0;
             alertDataPort = initAlertPort();
             if (alertDataPort == null) {
                 AISObjectList.setWirelessOK(false);
@@ -89,12 +89,12 @@ public class AlertTimerTask extends TimerTask implements WirelessPortCloseEvent 
         if (alert == null || alert.getAlertArea().isEmpty()) {
             return;
         }
-        if (alertType.equals(alert.getAlertArea())) {
-            if (changeAlertCount++ < changeAlert) {
-                return;
-            }
-        }
-        changeAlertCount = 0;
+//        if (alertType.equals(alert.getAlertArea())) {
+//            if (changeAlertCount++ < changeAlert) {
+//                return;
+//            }
+//        }
+//        changeAlertCount = 0;
         alertType = sendDataArduino(alert.getAlertArea(), alert.getSoundType());
     }
 
